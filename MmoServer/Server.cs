@@ -13,18 +13,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MmoServer.Server
+namespace MmoServer
 {
     using WorkerDict = Dictionary<string, Worker>;
     using CSToken = CancellationTokenSource;
-    public class MmoServer : CoreNetwork
+    public class Server : CoreNetwork
     {
         CoreTCP mListener = new CoreTCP(AddressFamily.InterNetwork);
         WorkerDict mWorkerDict = new WorkerDict();
         CSToken shutdownTokenSource = new CSToken();
 
         // port fix 30000
-        public MmoServer()
+        public Server()
             : base("MMO")
         {
             logger = new Log4Logger();
@@ -180,6 +180,11 @@ namespace MmoServer.Server
         protected override void Analizer_Test(CoreSession _s, Packet _p)
         {
             throw new NotImplementedException();
+        }
+
+        public bool IsShutdownRequested()
+        {
+            return shutdownTokenSource.IsCancellationRequested;
         }
     }
 }
