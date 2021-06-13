@@ -25,6 +25,8 @@ namespace MmoServer
         WorkerDict mWorkerDict = new WorkerDict();
         CSToken shutdownTokenSource = new CSToken();
 
+        public static Server Inst { get; private set; } = new Server();
+
         // port fix 30000
         public Server()
             : base("MMO")

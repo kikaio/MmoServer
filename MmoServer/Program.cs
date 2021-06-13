@@ -16,9 +16,8 @@ namespace MmoServer
         {
             CoreLogger logger = new Log4Logger();
 
-            Server mServer = new Server();
-            mServer.ReadyToStart();
-            mServer.Start();
+            Server.Inst.ReadyToStart();
+            Server.Inst.Start();
             Task.Factory.StartNew(async () => {
 
                 var data = await IPUtils.GetIPData();
@@ -26,7 +25,7 @@ namespace MmoServer
                 data.private_port = 30000;
             });
 
-            while (mServer.IsShutdownRequested() == false)
+            while (Server.Inst.IsShutdownRequested() == false)
             {
                 Thread.Sleep(1000);
             }
