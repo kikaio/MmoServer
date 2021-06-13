@@ -111,13 +111,14 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="Users\UserPeer.cs" />
+    <Compile Include="Users\IDispacher.cs" />
     <Compile Include="Utils\IPUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Compile Include="Users\UserPeer.State.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Users\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

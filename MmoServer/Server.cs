@@ -3,7 +3,9 @@ using CoreNet.Networking;
 using CoreNet.Protocols;
 using CoreNet.Sockets;
 using CoreNet.Utils.Loggers;
+using MmoCore.Packets;
 using MmoCore.Protocols;
+using MmoServer.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,7 +77,10 @@ namespace MmoServer
                     var pkg = packageQ.pop();
                     while (pkg != default(Package))
                     {
-                        PackageDispatcher(pkg);
+                        //do async dispatch for each package
+                        Task.Factory.StartNew(async() => {
+                            PackageDispatcher(pkg);
+                        });
                         pkg = packageQ.pop();
                     }
                     Thread.Sleep(100);
@@ -137,7 +142,7 @@ namespace MmoServer
                 {
                     var sock = mListener.Sock.Accept();
                     var newSid = SessionMgr.Inst.GetNextSessionId();
-                    CoreSession s = new CoreSession(newSid, new CoreTCP(sock));
+                    var s = new UserPeer(newSid, new CoreTCP(sock));
                     SessionMgr.Inst.AddSession(s);
                     Task.Factory.StartNew(async () => {
                         while (shutdownTokenSource.IsCancellationRequested == false)
@@ -164,22 +169,30 @@ namespace MmoServer
 
         protected override void Analizer_Ans(CoreSession _s, Packet _p)
         {
-            throw new NotImplementedException();
+            MmoCorePacket mp = new MmoCorePacket(_p);
+            var up = (UserPeer)_s;
+            up.Dispatch_Ans(mp);
         }
 
         protected override void Analizer_Noti(CoreSession _s, Packet _p)
         {
-            throw new NotImplementedException();
+            MmoCorePacket mp = new MmoCorePacket(_p);
+            var up = (UserPeer)_s;
+            up.Dispatch_Noti(mp);
         }
 
         protected override void Analizer_Req(CoreSession _s, Packet _p)
         {
-            throw new NotImplementedException();
+            MmoCorePacket mp = new MmoCorePacket(_p);
+            var up = (UserPeer)_s;
+            up.Dispatch_Req(mp);
         }
 
         protected override void Analizer_Test(CoreSession _s, Packet _p)
         {
-            throw new NotImplementedException();
+            MmoCorePacket mp = new MmoCorePacket(_p);
+            var up = (UserPeer)_s;
+            up.Dispatch_Test(mp);
         }
 
         public bool IsShutdownRequested()
