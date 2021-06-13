@@ -126,11 +126,22 @@ namespace MmoServer.Users
 
         public virtual void Dispatch_Noti(MmoCorePacket _mp)
         {
-            throw new NotImplementedException();
+            // send chatting packet to everyone 
+            switch (_mp.cType)
+            {
+                case MmoCore.Enums.CONTENT_TYPE.TEST:
+                    break;
+                case MmoCore.Enums.CONTENT_TYPE.CHAT:
+                    Server.Inst.BroadCastAllUsers(_mp);
+                    break;
+                default:
+                    break;
+            }
         }
 
         public virtual void Dispatch_Req(MmoCorePacket _mp)
         {
+            //some req like join match queue?
             throw new NotImplementedException();
         }
 
