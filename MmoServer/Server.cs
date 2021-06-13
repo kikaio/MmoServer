@@ -201,5 +201,18 @@ namespace MmoServer
         {
             return shutdownTokenSource.IsCancellationRequested;
         }
+
+        public void BroadCastAllUsers(MmoCorePacket _mp)
+        {
+            Task.Factory.StartNew(async (_obj) => {
+                foreach (var s in SessionMgr.Inst.ToSessonList())
+                {
+                    MmoCorePacket copyPacket = new MmoCorePacket(_mp);
+                    if (s.Sock.Sock.Connected == false)
+                        continue;
+                    await s.OnSendTAP(copyPacket);
+                }
+            }, _mp);
+        }
     }
 }
