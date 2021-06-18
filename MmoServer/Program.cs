@@ -14,7 +14,7 @@ namespace MmoServer
     {
         static void Main(string[] args)
         {
-            CoreLogger logger = new Log4Logger();
+            CoreLogger logger = new ConsoleLogger();
 
             Server.Inst.ReadyToStart();
             Server.Inst.Start();
@@ -29,7 +29,7 @@ namespace MmoServer
             {
                 Thread.Sleep(1000);
             }
-            Console.WriteLine("programe down, press any key");
+            logger.WriteDebug("programe down, press any key");
         }
     }
 }

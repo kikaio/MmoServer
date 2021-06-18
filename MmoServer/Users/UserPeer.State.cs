@@ -1,4 +1,6 @@
-﻿using MmoCore.Packets;
+﻿using CoreNet.Utils;
+using CoreNet.Utils.Loggers;
+using MmoCore.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +12,7 @@ namespace MmoServer.Users
     public class UserPeerState : IDIspatcher
     {
         public UserPeer mPeer { get; protected set; }
+        protected CoreLogger logger = new Log4Logger();
 
         public virtual void Dispatch_Ans(MmoCorePacket _mp)
         {
@@ -82,6 +85,7 @@ namespace MmoServer.Users
         public virtual void Dispatch_Req(MmoCorePacket _mp)
         {
             //only recv hello request packet from client
+            logger.WriteDebug($"{mPeer.SessionId} recv content : {_mp.cType.ToString()}");
             switch (_mp.cType)
             {
                 case MmoCore.Enums.CONTENT_TYPE.HELLO:

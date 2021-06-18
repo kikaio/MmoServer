@@ -27,6 +27,7 @@ namespace MmoServer.Users
 
         public UserPeer(long _sid, CoreSock _sock) : base(_sid, _sock)
         {
+            InitState();
         }
 
         private void InitState()
@@ -67,31 +68,9 @@ namespace MmoServer.Users
         public void UpdateState(STATE _nextState)
         {
             if (_nextState == curState)
-            {
-                //todo : logging
                 return;
-            }
             curState = _nextState;
-            //todo : logging about change state
             return;
-
-            //switch (_nextState)
-            //{
-            //    case STATE.NONE:
-            //        break;
-            //    case STATE.TRY_WELCOME:
-            //        break;
-            //    case STATE.IN_LOBBY:
-            //        break;
-            //    case STATE.IN_SELECT:
-            //        break;
-            //    case STATE.IN_BATTLE:
-            //        break;
-            //    case STATE.END:
-            //        break;
-            //    default:
-            //        break;
-            //}
         }
     }
 }

@@ -31,7 +31,7 @@ namespace MmoServer
         public Server()
             : base("MMO")
         {
-            logger = new Log4Logger();
+            logger = new ConsoleLogger();
             logger.WriteDebug("Server Start");
             ep = new IPEndPoint(IPAddress.Any, port);
             shutdownAct = () => {
@@ -140,18 +140,24 @@ namespace MmoServer
         public override void Start()
         {
             Task.Factory.StartNew(()=> {
+                logger.WriteDebug($"Session Accept Task start ");
                 while (shutdownTokenSource.IsCancellationRequested == false)
                 {
                     var sock = mListener.Sock.Accept();
                     var newSid = SessionMgr.Inst.GetNextSessionId();
                     var s = new UserPeer(newSid, new CoreTCP(sock));
                     SessionMgr.Inst.AddSession(s);
+                    logger.WriteDebug($"New Session Connected : {newSid}");
                     Task.Factory.StartNew(async () => {
+                        logger.WriteDebug($"{s.SessionId} Recv Start");
                         while (shutdownTokenSource.IsCancellationRequested == false)
                         {
                             if (s.Sock.Sock.Connected == false)
+                            {
                                 break;
+                            }
                             Packet p = await s.OnRecvTAP();
+                            logger.WriteDebug($"{s.SessionId} Recved");
                             if (p != default(Packet))
                             {
                                 //todo : 추후에 개별 dispatcher로 구분할 것.
@@ -160,7 +166,7 @@ namespace MmoServer
                         }
                     }, TaskCreationOptions.DenyChildAttach);
                 }
-            });
+            }, TaskCreationOptions.DenyChildAttach);
 
             foreach (var ele in mWorkerDict)
             {
