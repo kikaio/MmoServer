@@ -1,3 +1,5 @@
 MmoServer/obj/Debug/
 .vs/
 MmoServer/bin/
+TestClient/obj/
+TestClient/bin/
