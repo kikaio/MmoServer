@@ -30,9 +30,14 @@ namespace TestClient
 
             wDict["hb"].PushJob(new JobOnce(DateTime.UtcNow, () =>
             {
+                int deltaTicks = (int)(CoreSession.hbDelayMilliSec * 0.75f);
                 while (isDown == false)
                 {
-                    Task.Delay(CoreSession.hbDelayMilliSec);
+                    Task.Factory.StartNew(async () => {
+                        HeartbeatNoti p = new HeartbeatNoti();
+                        await mSession.OnSendTAP(p);
+                    });
+                    Task.Delay(deltaTicks);
                 }
             }));
 
@@ -83,6 +88,7 @@ namespace TestClient
             Task.Factory.StartNew(async () => {
                 while(mSession.isWelcomed == false)
                 {
+                    logger.WriteDebug("send hello req");
                     HelloReq hp = new HelloReq();
                     hp.SerWrite();
                     await mSession.OnSendTAP(hp);
