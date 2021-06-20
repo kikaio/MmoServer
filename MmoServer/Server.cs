@@ -33,7 +33,6 @@ namespace MmoServer
         {
             logger = new ConsoleLogger();
             logger.WriteDebug("Server Start");
-            ep = new IPEndPoint(IPAddress.Any, port);
             shutdownAct = () => {
                 logger.WriteDebugWarn("Server shutdown called");
                 shutdownTokenSource.Cancel();
@@ -62,72 +61,75 @@ namespace MmoServer
 
         private void BindAndListen()
         {
+            ep = new IPEndPoint(IPAddress.Any, port);
+            mListener.Sock.NoDelay = true;
             mListener.Sock.Bind(ep);
             mListener.Sock.Listen(100);
         }
+
+        private void HbCheck()
+        {
+            var expireList = new List<CoreSession>();
+            foreach (var ele in SessionMgr.Inst.ToSessonList())
+            {
+                if (ele.Sock.Sock.Connected == false)
+                    expireList.Add(ele);
+                if (ele.HeartBeat < DateTime.UtcNow)
+                    expireList.Add(ele);
+            }
+
+            foreach (var ele in expireList)
+            {
+                var removed = default(CoreSession);
+                SessionMgr.Inst.CloseSession(ele.SessionId, out removed);
+                if (removed != null)
+                {
+                    logger.WriteDebugWarn($"session {ele.SessionId} is expired");
+                }
+            }
+        }
+
         private void ReadyWorkers()
         {
             mWorkerDict["pkg"] = new Worker("pkg", true);
-            mWorkerDict["hb"] = new Worker("hb", true);
-            mWorkerDict["cmd"] = new Worker("cmd", true);
-
+            //mWorkerDict["cmd"] = new Worker("cmd", true);
+            
             //todo : make personal packageQ thread
-            var pkgJob = new JobOnce(DateTime.MinValue, () => {
-                while (shutdownTokenSource.IsCancellationRequested == false)
+            var pkgJob = new JobInfinity(async () => {
+                if (IsShutdownRequested())
+                    return;
+                packageQ.Swap();
+                while (true)
                 {
-                    packageQ.Swap();
                     var pkg = packageQ.pop();
-                    while (pkg != default(Package))
-                    {
-                        //do async dispatch for each package
-                        Task.Factory.StartNew(async() => {
-                            PackageDispatcher(pkg);
-                        });
-                        pkg = packageQ.pop();
-                    }
-                    Thread.Sleep(100);
+                    if (pkg == default(Package))
+                        break;
+                    await Task.Factory.StartNew(async () => {
+                        PackageDispatcher(pkg);
+                    });
                 }
+                HbCheck();
             });
 
-            long hbCehckTicks = TimeSpan.FromMilliseconds(CoreSession.hbDelayMilliSec).Ticks;
-            var hbJob = new JobNormal(DateTime.MinValue, DateTime.MaxValue
-                , hbCehckTicks, () => {
-                    if (shutdownTokenSource.IsCancellationRequested)
-                        return;
-                    var delList = new List<CoreSession>();
-                    foreach (var s in SessionMgr.Inst.ToSessonList())
-                    {
-                        if (s.HeartBeat < DateTime.UtcNow)
-                            delList.Add(s);
-                    }
-
-                    foreach (var s in delList)
-                    {
-                        var del = default(CoreSession);
-                        if (SessionMgr.Inst.ForceCloseSession(s.SessionId, out del) == false)
-                            logger.Error($"session[{s.SessionId}] force close is failed");
-                    }
-                });
-            var cmdJob = new JobOnce(DateTime.MinValue, () =>
-            {
-                while (shutdownTokenSource.IsCancellationRequested == false)
-                {
-                    string inputs = Console.ReadLine().ToUpper();
-                    string[] cmds = inputs.Split(' ');
-                    if (cmds.Length < 1)
-                        return;
-                    switch (cmds[0])
-                    {
-                        case "EXIT":
-                            shutdownAct?.Invoke();
-                            break;
-                    }
-                }
-            });
+            //var cmdJob = new JobOnce(DateTime.MinValue, async () =>
+            //{
+            //    while (shutdownTokenSource.IsCancellationRequested == false)
+            //    {
+            //        string inputs = Console.ReadLine().ToUpper();
+            //        string[] cmds = inputs.Split(' ');
+            //        if (cmds.Length < 1)
+            //            return;
+            //        switch (cmds[0])
+            //        {
+            //            case "EXIT":
+            //                shutdownAct?.Invoke();
+            //                break;
+            //        }
+            //    }
+            //});
 
             mWorkerDict["pkg"].PushJob(pkgJob);
-            mWorkerDict["hb"].PushJob(hbJob);
-            mWorkerDict["cmd"].PushJob(cmdJob);
+            //mWorkerDict["cmd"].PushJob(cmdJob);
         }
 
         public override void ReadyToStart()
@@ -157,11 +159,16 @@ namespace MmoServer
                                 break;
                             }
                             Packet p = await s.OnRecvTAP();
-                            logger.WriteDebug($"{s.SessionId} Recved");
                             if (p != default(Packet))
                             {
                                 //todo : 추후에 개별 dispatcher로 구분할 것.
-                                packageQ.Push(new Package(s, p));
+                                if (p.GetHeader() == 0)
+                                    s.UpdateHeartBeat();
+                                else
+                                {
+                                    logger.WriteDebug("packet recved");
+                                    packageQ.Push(new Package(s, p));
+                                }
                             }
                         }
                     }, TaskCreationOptions.DenyChildAttach);
