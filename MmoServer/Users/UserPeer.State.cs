@@ -12,7 +12,7 @@ namespace MmoServer.Users
     public class UserPeerState : IDIspatcher
     {
         public UserPeer mPeer { get; protected set; }
-        protected CoreLogger logger = new Log4Logger();
+        protected CoreLogger logger = new ConsoleLogger();
 
         public virtual void Dispatch_Ans(MmoCorePacket _mp)
         {
@@ -43,22 +43,22 @@ namespace MmoServer.Users
         }
 
 
-        public virtual void Dispatch_Ans(MmoCorePacket _mp)
+        public override void Dispatch_Ans(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Noti(MmoCorePacket _mp)
+        public override void Dispatch_Noti(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Req(MmoCorePacket _mp)
+        public override void Dispatch_Req(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Test(MmoCorePacket _mp)
+        public override void Dispatch_Test(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
@@ -72,17 +72,17 @@ namespace MmoServer.Users
         }
 
 
-        public virtual void Dispatch_Ans(MmoCorePacket _mp)
+        public override void Dispatch_Ans(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Noti(MmoCorePacket _mp)
+        public override void Dispatch_Noti(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Req(MmoCorePacket _mp)
+        public override void Dispatch_Req(MmoCorePacket _mp)
         {
             //only recv hello request packet from client
             logger.WriteDebug($"{mPeer.SessionId} recv content : {_mp.cType.ToString()}");
@@ -109,7 +109,7 @@ namespace MmoServer.Users
             }
         }
 
-        public virtual void Dispatch_Test(MmoCorePacket _mp)
+        public override void Dispatch_Test(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
@@ -123,12 +123,12 @@ namespace MmoServer.Users
         }
 
 
-        public virtual void Dispatch_Ans(MmoCorePacket _mp)
+        public override void Dispatch_Ans(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Noti(MmoCorePacket _mp)
+        public override void Dispatch_Noti(MmoCorePacket _mp)
         {
             // send chatting packet to everyone 
             switch (_mp.cType)
@@ -143,13 +143,13 @@ namespace MmoServer.Users
             }
         }
 
-        public virtual void Dispatch_Req(MmoCorePacket _mp)
+        public override void Dispatch_Req(MmoCorePacket _mp)
         {
             //some req like join match queue?
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Test(MmoCorePacket _mp)
+        public override void Dispatch_Test(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
@@ -163,22 +163,22 @@ namespace MmoServer.Users
         }
 
 
-        public virtual void Dispatch_Ans(MmoCorePacket _mp)
+        public override void Dispatch_Ans(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Noti(MmoCorePacket _mp)
+        public override void Dispatch_Noti(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Req(MmoCorePacket _mp)
+        public override void Dispatch_Req(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Test(MmoCorePacket _mp)
+        public override void Dispatch_Test(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
@@ -192,22 +192,22 @@ namespace MmoServer.Users
         }
 
 
-        public virtual void Dispatch_Ans(MmoCorePacket _mp)
+        public override void Dispatch_Ans(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Noti(MmoCorePacket _mp)
+        public override void Dispatch_Noti(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Req(MmoCorePacket _mp)
+        public override void Dispatch_Req(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
 
-        public virtual void Dispatch_Test(MmoCorePacket _mp)
+        public override void Dispatch_Test(MmoCorePacket _mp)
         {
             throw new NotImplementedException();
         }
