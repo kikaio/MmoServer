@@ -27,18 +27,18 @@ namespace TestClient
 
             wDict["hb"] = new Worker("hb");
             wDict["recv"] = new Worker("recv");
+            int millSec = (int)(CoreSession.hbDelayMilliSec * 0.75f);
+            long deltaTicks = TimeSpan.FromMilliseconds(millSec).Ticks;
 
-            wDict["hb"].PushJob(new JobOnce(DateTime.UtcNow, () =>
+            wDict["hb"].PushJob(new JobNormal(DateTime.MinValue, DateTime.MaxValue, deltaTicks, () =>
             {
-                int deltaTicks = (int)(CoreSession.hbDelayMilliSec * 0.75f);
-                while (isDown == false)
-                {
-                    Task.Factory.StartNew(async () => {
-                        HeartbeatNoti p = new HeartbeatNoti();
-                        await mSession.OnSendTAP(p);
-                    });
-                    Task.Delay(deltaTicks);
-                }
+                if (mSession.Sock.Sock.Connected == false || isDown)
+                    return;
+                Task.Factory.StartNew(async()=> {
+                    HeartbeatNoti p = new HeartbeatNoti();
+                    logger.WriteDebug("send hb checker");
+                    await mSession.OnSendTAP(p);
+                });
             }));
 
             wDict["recv"].PushJob(new JobOnce(DateTime.UtcNow, async () => {
