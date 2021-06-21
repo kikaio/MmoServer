@@ -5,6 +5,7 @@ using CoreNet.Sockets;
 using CoreNet.Utils.Loggers;
 using MmoCore.Packets;
 using MmoCore.Protocols;
+using MmoServer.Configs;
 using MmoServer.Users;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,9 @@ namespace MmoServer
         public Server()
             : base("MMO")
         {
+            MmoTranslate.Init();
+            ConfigMgr.Init();
+
             logger = new ConsoleLogger();
             logger.WriteDebug("Server Start");
             shutdownAct = () => {
