@@ -52,15 +52,7 @@ namespace MmoServer
 
                 Console.Write("Server is down");
             };
-        }
 
-        private void ReadyTranslate()
-        {
-            //coreNet translate init
-            Translate.Init();
-
-            //mmoCore translate init
-            MmoTranslate.Init();
         }
 
         private void BindAndListen()
@@ -138,7 +130,6 @@ namespace MmoServer
 
         public override void ReadyToStart()
         {
-            ReadyTranslate();
             BindAndListen();
             ReadyWorkers();
         }
