@@ -99,7 +99,7 @@ namespace MmoServer.Users
                         if (await mPeer.OnSendTAP(ret))
                         {
                             logger.WriteDebug("Peer Change to IN_LOBBY");
-                            mPeer.UpdateState(UserPeer.STATE.IN_LOBBY);
+                            mPeer.UpdateState(UserPeer.STATE.CHECK_AUTH);
                         }
                         else
                         {
