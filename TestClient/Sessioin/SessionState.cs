@@ -71,6 +71,7 @@ namespace TestClient.Sessioin
                     var ans = new WelcomeAns(_mp);
                     ans.SerRead();
                     logger.WriteDebug($"recv welcome, my session id is {ans.sId}");
+                    session.ChangeState(SESSION_STATE.CHECK_AUTH);
                     break;
                 default:
                     break;
