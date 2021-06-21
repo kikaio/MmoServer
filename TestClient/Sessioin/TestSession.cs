@@ -8,39 +8,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TestClient.Sessioin;
 
 namespace TestClient
 {
-    internal interface IDispatch
-    {
-        void Dispatch_Req(MmoCorePacket _mp);
-        void Dispatch_Ans(MmoCorePacket _mp);
-        void Dispatch_Noti(MmoCorePacket _mp);
-        void Dispatch_Test(MmoCorePacket _mp);
-    }
 
-
-    class TestSession : CoreSession, IDispatch
+    public class TestSession : CoreSession
     {
         private CoreLogger logger = new ConsoleLogger();
         public bool isWelcomed = false;
+
+        private Dictionary<SESSION_STATE, SessionState> stateDict = new Dictionary<SESSION_STATE, SessionState>();
+
         public TestSession(long _sid, CoreSock _sock) : base(_sid, _sock)
         {
+            stateDict[SESSION_STATE.SEND_HELLO] = new Session_SEND_HELLO(this);
+            stateDict[SESSION_STATE.CHECK_AUTH] = new Session_CHECK_AUTH(this);
+            stateDict[SESSION_STATE.IN_LOBBY] = new Session_(this);
+
         }
 
         public void Dispatch_Ans(MmoCorePacket _mp)
         {
-            switch (_mp.cType)
-            {
-                case MmoCore.Enums.CONTENT_TYPE.WELCOME:
-                    var ans = new WelcomeAns(_mp);
-                    ans.SerRead();
-                    isWelcomed = true;
-                    logger.WriteDebug($"recv welcome, my session id is {ans.sId}");
-                    break;
-                default:
-                    break;
-            }
+
         }
 
         public void Dispatch_Noti(MmoCorePacket _mp)

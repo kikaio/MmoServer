@@ -15,8 +15,9 @@ namespace MmoServer.Users
         {
             NONE,
             TRY_WELCOME,
+            CHECK_AUTH, // rsa key check, dh key swap
+            LOGIN,
             IN_LOBBY,
-            //need to dh key swap using rsa
             IN_SELECT,
             IN_BATTLE,
             END
