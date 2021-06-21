@@ -49,6 +49,7 @@ namespace TestClient
                     {
                         p.ReadPacketType();
                         var mp = new MmoCorePacket(p);
+                        logger.WriteDebug($"[{mp.pType}-{mp.cType}] packet recved");
                         switch (mp.pType)
                         {
                             case Packet.PACKET_TYPE.NOTI:

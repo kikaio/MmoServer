@@ -33,8 +33,10 @@ namespace TestClient
             switch (_mp.cType)
             {
                 case MmoCore.Enums.CONTENT_TYPE.WELCOME:
+                    var ans = new WelcomeAns(_mp);
+                    ans.SerRead();
                     isWelcomed = true;
-                    logger.WriteDebug("recv welcome");
+                    logger.WriteDebug($"recv welcome, my session id is {ans.sId}");
                     break;
                 default:
                     break;

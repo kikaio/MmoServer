@@ -97,7 +97,10 @@ namespace MmoServer.Users
                         ret.SerWrite();
                         //change state after send complete 
                         if (await mPeer.OnSendTAP(ret))
+                        {
+                            logger.WriteDebug("Peer Change to IN_LOBBY");
                             mPeer.UpdateState(UserPeer.STATE.IN_LOBBY);
+                        }
                         else
                         {
                             //todo : action for closed session
